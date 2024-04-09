@@ -55,15 +55,17 @@ def user_details(request):
 @login_required
 def user_referrals(request):
     if request.user.is_authenticated:
-      current_user = request.user
-      referrals = User.objects.filter(referral_code=current_user.referral_code)
-      data = {
-            'id':referrals.id,
-            'username':referrals.username,
-            'email':referrals.email,
-            'referral_code':referrals.referral_code,
-            'points':referrals.points    
-        }
-      return JsonResponse(data)
+        current_user = request.user
+        referrals = User.objects.filter(referral_code=current_user.referral_code)
+        data = []
+        for referral in referrals:
+            data.append({
+                'id': referral.id,
+                'username': referral.username,
+                'email': referral.email,
+                'referral_code': referral.referral_code,
+                'points': referral.points    
+            })
+        return JsonResponse(data, safe=False)
     else:
-      return JsonResponse({'error': 'Authentication required'}, status=401)
+        return JsonResponse({'error': 'Authentication required'}, status=401)
